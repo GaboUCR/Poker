@@ -24,11 +24,6 @@ enum valor_carta {
     K=12
 };
 
-// const enum tipo_carta diamantes;
-// const enum tipo_carta corazones;
-// const enum tipo_carta flores;
-// const enum tipo_carta espadas;
-
 typedef struct carta {
     int valor_carta;
     int tipo_carta;
@@ -40,6 +35,17 @@ typedef struct mazo {
     int restantes;
 } mazo;
 
+typedef struct jugador {
+    char * nombre;
+    carta * mano;
+    int dinero
+} jugador;
+
+typedef struct juego {
+    carta *mesa;
+    int cantidad_cartas;
+    int apuesta_minima    
+} juego;
 
 mazo* crear_mazo () {
     
@@ -63,7 +69,7 @@ mazo* crear_mazo () {
     return nuevo_mazo;
 }
 
-carta* repartir( mazo* baraja, int cantidad) {
+carta* repartir(mazo* baraja, int cantidad) {
 
     if (cantidad > (*baraja).restantes) {
 
@@ -145,24 +151,69 @@ void imprimir_mano (carta* mano, int cantidad) {
         imprimir_carta(*(mano + i));
         printf("   ");
 
-
     }
     printf("\n");
 }
 
-void main () {
-     mazo *mazo = crear_mazo();
+void jugar () {
+    
+    int cantidad_jugadores = 2;
+    int cantidad_jugadores_eliminados = 0;
 
-    carta * mano = repartir(mazo, 5);
-    carta * mano1 = repartir(mazo, 1);
+    jugador* jugadores = malloc(cantidad_jugadores*sizeof(jugador));
+    jugador* jugadores_eliminados = malloc(cantidad_jugadores*sizeof(jugador));
 
-    imprimir_mano(mano, 5);
+    int dinero_inicial = 2000;
 
-    if (mano1 == NULL) {
-        printf("hola");
+    jugador jugador1;
+    jugador1.nombre = "Gabp";
+    jugador1.dinero = dinero_inicial;
+    jugador jugador2;
+    jugador1.nombre = "Gabp";
+    jugador1.dinero = dinero_inicial;
 
+    *jugadores = jugador1;
+    *(jugadores + 1) = jugador2;
+
+    juego juego;
+    mazo *mazo = crear_mazo();
+
+    while (cantidad_jugadores_eliminados != cantidad_jugadores - 1) {
+        //cartas iniciales sobre la mesa
+        juego.mesa = repartir(mazo, 2);
+        juego.cantidad_cartas = 2;
+
+        //se reparte 2 cartas a cada jugador
+        for (int i = 0; i < cantidad_jugadores - cantidad_jugadores_eliminados; i++) {
+
+            (*(jugadores + i)).mano =  repartir(mazo, 2);
+        }
+
+        imprimir_mano(juego.mesa, juego.cantidad_cartas);
+        
+        break;
+        //apuesta
     }
+    
+
+
+
+}
+
+void main () {
+    // mazo *mazo = crear_mazo();
+
+    // carta * mano = repartir(mazo, 5);
+    // carta * mano1 = repartir(mazo, 1);
+
+    // imprimir_mano(mano, 5);
+
+    // if (mano1 == NULL) {
+    //     printf("hola");
+
+    // }
    
+   jugar();
 
     // imprimir_carta(*(mano1) );
       
