@@ -7,6 +7,18 @@
 
     typedef struct list_node {struct list_node* next; carta* carta;} node;
     
+    enum valor_cartas {
+        StraightFlush = 1,
+        FourOfAKind = 2,
+        FullHouse = 3,
+        Flush = 4,
+        Straight = 5,
+        ThreeOfAKind = 6,
+        TwoPairs = 7,
+        OnePair = 8,
+        NoPair = 9,
+    };
+
     enum tipo_carta {
         diamantes=0,
         corazones=1,

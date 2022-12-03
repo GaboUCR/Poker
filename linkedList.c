@@ -3,7 +3,6 @@
 #include <string.h>
 #include "poker.h"
 
-
 node* makeListNode (carta* carta) {
 
 	node* newElement = malloc(sizeof(node));
@@ -20,6 +19,7 @@ node* insert (carta carta, node * head) {
     *c = carta;
 
 	node* new = makeListNode(c);
+    // head -> cantidad += 1;
 
 	if (head == NULL) {
 		

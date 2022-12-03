@@ -2,6 +2,7 @@
 #include <stdio.h>
 // #include "linkedList.h"
 #include "poker.h"
+#include <string.h>
 
 mazo* crear_mazo () {
     
@@ -117,6 +118,92 @@ void cargar_jugadores_en_ronda(jugador* jugadores, int cantidad_jugadores, int* 
     *cantidad_jugadores_en_ronda = j;
 }
 
+void valor_de_mano (node* mano, node* mesa) {
+
+    // comprobar straigh flush
+    carta posible_flush[100];
+    int j = 0;
+    int cantidad_tipo = 0;
+
+
+
+    for (int i = 0; i < 4; i++) {
+
+        j = 0;
+        cantidad_tipo = 0;
+
+        node * actual = mano;
+        
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> tipo_carta) == i) {
+
+                cantidad_tipo += 1;
+                posible_flush[j] = *(actual -> carta);
+                j++;
+                
+            }
+            actual = actual -> next;
+
+        }
+
+        actual = mesa;
+
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> tipo_carta) == i) {
+
+                cantidad_tipo += 1;
+                posible_flush[j] = *(actual -> carta);
+                j++;
+                
+            }
+            actual = actual -> next;
+
+        }
+        
+
+        if (cantidad_tipo >= 5) {
+
+            carta flush_ordenado[15];
+            int secuencia = 1;
+
+            while (True) {
+
+                for (int i = 0; i < 10; i++) {
+                    carta c = posible_flush[i];
+                    int siguiente;
+
+                    if (c.valor_carta == K) {
+                        siguiente = A;
+                    }
+                    else {
+                        siguiente = c.valor_carta + 1;
+                    }
+
+                    for (int j = i+1; j<10; j++) {
+
+
+                        if (posible_flush[j].valor_carta == siguiente) {
+                            secuencia++;
+                        }
+                    }
+
+                }
+            }
+
+
+
+            
+        }            
+
+    }
+
+    
+
+
+}
+
 void jugar () {
     
     int cantidad_jugadores = 2;
@@ -179,16 +266,90 @@ void jugar () {
                 }                
             }
         }
+        //Se revisa quien gano
+
+
         break;
     }
 }
-//         //Se revisa quien gano
         
-//         //apuesta
+        
+        //apuesta
+
+
+void mensaje_bienvenida () {
+
+    printf(".------..------..------..------..------..------..------..------..------..------.\n");
+    printf("|B.--. ||I.--. ||E.--. ||N.--. ||V.--. ||E.--. ||N.--. ||I.--. ||D.--. ||O.--. |\n");
+    printf("| :(): || (\\/) || (\\/) || :(): || :(): || (\\/) || :(): || (\\/) || :/\\: || :/\\: |\n");
+    printf("| ()() || :\\/: || :\\/: || ()() || ()() || :\\/: || ()() || :\\/: || (__) || :\\/: |\n");
+    printf("| '--'B|| '--'I|| '--'E|| '--'N|| '--'V|| '--'E|| '--'N|| '--'I|| '--'D|| '--'O|\n");
+    printf("`------'`------'`------'`------'`------'`------'`------'`------'`------'`------'\n\n");
+}
+
+// recibe dos strings y revisa si la primera string comienza con la segunda string
+int strstarts(const char *str, const char *prefix)
+{
+     return strncmp(str, prefix, strlen(prefix)) == 0;
+}
+
+// Recibe un entero y revisa que sea un número de base 10
+int revisar_input (char* a) {
+
+    int cantidad = strlen(a);
+    int i = 0;
+    char menos [] = "-";
+
+    if (strstarts(a, menos)) {
+        i++;
+    }
+
+    for (i; i <cantidad; i++) {
+
+        if (!isdigit(*(a+i))) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+
+
+
+void f_main () {
+
+    mensaje_bienvenida();
+
+    printf("¿Que desea hacer?\n");
+    printf("\n(1)   ¡Jugar!");
+    printf("\n(2)   Reglas");
+    printf("\n(3)   Mejores manos ");
+    printf("\n(4)   Salir\n");
+    printf("Elija una opción (1-4):  ");
+
+    char opcion [1000];
+
+    scanf("%s", opcion);
+
+    int i = revisar_input(opcion);
+
+    printf("%d\n" , i);
+}
     
 
 
 void main () {
+    f_main();
+    // printf("llegamos");
+    // node* mano = NULL;
+    // node* mesa = NULL;
+    // mazo* baraja = crear_mazo();
     
-    jugar();
+    // mano = repartir(baraja, 5, mano);
+    // mesa = repartir(baraja, 5, mesa);
+    
+    // valor_de_mano(mano, mesa);
+    // jugar();
+
 }
