@@ -204,7 +204,7 @@ void valor_de_mano (node* mano, node* mesa) {
 
 }
 
-void jugar () {
+void jugar (jugador* jugadores, int dinero_inicial) {
     
     int cantidad_jugadores = 2;
     int cantidad_jugadores_eliminados = 0;
@@ -314,8 +314,33 @@ int revisar_input (char* a) {
     return 1;
 }
 
+//pide al usuario un valor entero, si el usuario entra otro caracter lo vuelve a pedir hasta tener un entero
+int pedir_input () {
 
+    char menos [] = "-";
 
+    while (1) {
+
+        char opcion [1000];
+        
+        scanf("%s", opcion);
+
+        if (revisar_input(opcion) == 1) {
+
+            if (strstarts(opcion, menos)) {
+                return -atoi(opcion+1);
+            }
+
+            return atoi(opcion);
+        }
+
+        printf("Input incorrecto, se espera un valor entero\n");
+    }
+}
+
+void pedir_nombres (jugador* jugadores, int* dinero_inicial) {
+
+}
 
 void f_main () {
 
@@ -328,17 +353,30 @@ void f_main () {
     printf("\n(4)   Salir\n");
     printf("Elija una opción (1-4):  ");
 
-    char opcion [1000];
+    int opcion;
 
-    scanf("%s", opcion);
+    while (1) {
+        
+        opcion = pedir_input();
 
-    int i = revisar_input(opcion);
+        if (opcion >= 1 && opcion <= 4) {
 
-    printf("%d\n" , i);
-}
+            break;
+        }
+
+        printf("Debe insertar un valor entre 1 y 4\n");
+    }
     
+    switch (opcion) {
+        case 1:
 
 
+    }
+    printf("%d", opcion);
+
+
+    }
+    
 void main () {
     f_main();
     // printf("llegamos");
