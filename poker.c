@@ -204,27 +204,9 @@ void valor_de_mano (node* mano, node* mesa) {
 
 }
 
-void jugar (jugador* jugadores, int dinero_inicial) {
+void jugar (jugador* jugadores, int cantidad_jugadores) {
     
-    int cantidad_jugadores = 2;
     int cantidad_jugadores_eliminados = 0;
-
-    jugador* jugadores = malloc(cantidad_jugadores*sizeof(jugador));
-
-    int dinero_inicial = 2000;
-
-    jugador jugador1;
-    jugador1.nombre = "Gabp";
-    jugador1.dinero = dinero_inicial;
-    jugador1.mano = NULL;
-    jugador jugador2;
-    jugador2.nombre = "yolo";
-    jugador2.dinero = dinero_inicial;
-    jugador2.mano = NULL;
-
-    *jugadores = jugador1;
-    *(jugadores + 1) = jugador2;
-
 
     while (cantidad_jugadores_eliminados != cantidad_jugadores - 1) {
         
@@ -275,7 +257,6 @@ void jugar (jugador* jugadores, int dinero_inicial) {
         
         
         //apuesta
-
 
 void mensaje_bienvenida () {
 
@@ -338,7 +319,66 @@ int pedir_input () {
     }
 }
 
-void pedir_nombres (jugador* jugadores, int* dinero_inicial) {
+int pedir_dinero_inicial () {
+
+    printf("Ingrese el dinero inicial para cada jugador");
+    int dinero_inicial = pedir_input();
+
+    while (dinero_inicial <= 0) {
+
+        printf("El dinero inicial debe ser positivo");    
+        dinero_inicial = pedir_input();
+    }
+
+    return dinero_inicial;
+}
+
+int pedir_cantidad_de_jugadores () {
+
+    printf("Ingrese la cantidad de jugadores");
+    int cantidad_de_jugadores = pedir_input();
+
+    while (cantidad_de_jugadores >= 2 && cantidad_de_jugadores <=5) {
+
+        printf("La cantidad de jugadores debe ser entre 2 y cinco");    
+        cantidad_de_jugadores = pedir_input();
+    }
+
+    return cantidad_de_jugadores;
+}
+
+jugador* pedir_nombres (int cantidad_de_jugadores) {
+    
+    jugador* jugadores = malloc(cantidad_de_jugadores*sizeof(jugador));
+
+    char nombre[100];
+    
+
+    for (int i = 0; i < cantidad_de_jugadores; i++) {
+
+        int b = 1;
+
+        while (b) {
+
+            b = 0;
+            
+            printf("Ingrese el nombre del jugador numero %d\n\n", i+1);
+            scanf("%s", nombre);
+
+            for (int j=0; j<i; j++) {
+
+                if (strcmp((jugadores+j) -> nombre, nombre) == 0) {
+                    printf("Ya existe un jugador con el nombre %s\n\n", nombre);
+                    b=1;
+                }
+            }
+        }
+        (jugadores+i)->nombre = malloc(100);
+        strcpy((jugadores+i)->nombre, nombre);
+
+    }
+
+    return jugadores;
 
 }
 
@@ -368,17 +408,41 @@ void f_main () {
     }
     
     switch (opcion) {
-        case 1:
 
+        case 1:;
+           
+            int dinero_inicial = pedir_dinero_inicial();
+            int cantidad_de_jugadores = pedir_cantidad_de_jugadores();
+            jugador* jugadores = pedir_nombres(cantidad_de_jugadores);
 
-    }
-    printf("%d", opcion);
+            for (int i =0; i < cantidad_de_jugadores; i++) {
+                (jugadores+i) -> dinero = dinero_inicial;
+                (jugadores+i) -> en_ronda = True;
+                (jugadores+i) -> mano = NULL;
+            }            
 
+            jugar(jugadores, cantidad_de_jugadores);
 
+            break;
+
+        case 2:;
+
+            printf("\n\nEn el siguiente enlace se pueden encontrar las reglas del juego:https://bicyclecards.com/how-to-play/basics-of-poker\n\n");
+            break;
+
+        case 3:
+            break;
+
+        case 4:
+            break;
+
+        }
     }
     
 void main () {
-    f_main();
+    // printf("g");
+    jugador* jugadores = pedir_nombres(4);
+    // f_main();
     // printf("llegamos");
     // node* mano = NULL;
     // node* mesa = NULL;
