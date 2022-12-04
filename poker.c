@@ -56,20 +56,33 @@ node* repartir(mazo* baraja, int cantidad, node* mano) {
 
 }
 
-void apuesta (juego* juego, jugador* jugador) {
+void apuesta (juego* juego, jugador* jugador, pot_node* bote) {
 
+    printf("\n\n\n\n");
     printf("Es el turno de %s su dinero actual es: %d\n", jugador -> nombre, jugador -> dinero);
 
-    printf("Las cartas sobre la mesa son: \n");
+    printf("Las cartas sobre la mesa son: \n\n");
     imprimir_mano(juego->mesa);
 
     printf("Su mano es: \n");
     imprimir_mano(jugador -> mano);
 
+    //revisa en cual bote puede apostar el jugador
+    pot_node* bote_actual = get_pot(bote, jugador->dinero, jugador->id);
+
     while (1) {
 
+        if (jugador -> dinero == 0) {
+            int inutil = 0;
+            printf("Dinero en juego para este bote: %d\n", bote_actual->dinero);
+            printf("Se encuentra All in, presione cualquier tecla para continuar.\n");
+            scanf("%d", &inutil);
+            break;
+        }
+
         int apuesta;
-        printf("¿Cuanto desea apostar? La apuesta mínima es: %d \n para retirarse inserte un -1 \n", juego->apuesta_minima);
+        printf("Dinero en juego para este bote: %d\n", bote_actual->dinero);
+        printf("¿Cuanto desea apostar? La apuesta mínima es: %d \n para retirarse inserte un -1 \n", bote_actual->apuesta_minima);
         scanf("%d", &apuesta);
 
         //pendiente: condiciones de apuesta
@@ -84,13 +97,13 @@ void apuesta (juego* juego, jugador* jugador) {
             printf(" \n\n\nNo puede apostar dinero que no tiene. su saldo actual es: %d \n", jugador -> dinero);
         }
 
-        else if (apuesta < juego -> apuesta_minima) {
+        else if (apuesta < bote_actual -> apuesta_minima) {
             printf(" \n\n\nLa apuesta deber ser igual o mayor que %d \n", juego->apuesta_minima);
         }
         
         else {
-            juego -> apuesta_minima = apuesta;
-            juego -> bote += apuesta;
+            bote_actual -> apuesta_minima = apuesta;
+            bote_actual -> dinero += apuesta;
 
             jugador -> dinero -= apuesta;
             jugador -> en_ronda = True;
@@ -204,13 +217,16 @@ void valor_de_mano (node* mano, node* mesa) {
 
 }
 
+//inicia el juego, todas las variables de los jugadores ya están inicializadas
 void jugar (jugador* jugadores, int cantidad_jugadores) {
     
-    int cantidad_jugadores_eliminados = 0;
+    juego juego;
+    // cada ciclo de este while es una ronda completa
+    while (True) {
 
-    while (cantidad_jugadores_eliminados != cantidad_jugadores - 1) {
-        
-        juego juego;
+        pot_node *bote = makeListpot_node(0, 0);
+
+
         juego.jugadores_en_ronda = cantidad_jugadores;
         mazo *mazo = crear_mazo();
 
@@ -222,6 +238,9 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
         int cartas_por_jugador = 2;
 
         cargar_jugadores_en_ronda(jugadores, cantidad_jugadores, &juego.jugadores_en_ronda);
+        if (juego.jugadores_en_ronda == 1) {
+            break;
+        }
         //se reparte 2 cartas a cada jugador
         for (int i = 0; i < cantidad_jugadores; i++) {
 
@@ -229,7 +248,7 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
     
                 (jugadores + i) -> mano =  repartir(mazo, 2, (jugadores + i) -> mano);
                 
-                apuesta(&juego, jugadores+i);
+                apuesta(&juego, jugadores+i, bote);
             }
         }
 
@@ -244,20 +263,19 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
                 if ((jugadores + j) -> en_ronda) {
 
                     (jugadores + j) -> mano =  repartir(mazo, 1, (jugadores + j) -> mano);
-                    apuesta(&juego, jugadores+j);
+                    apuesta(&juego, jugadores+j, bote);
                 }                
             }
         }
         //Se revisa quien gano
+
+        //se limpian todas las variables
 
 
         break;
     }
 }
         
-        
-        //apuesta
-
 void mensaje_bienvenida () {
 
     printf(".------..------..------..------..------..------..------..------..------..------.\n");
@@ -321,12 +339,12 @@ int pedir_input () {
 
 int pedir_dinero_inicial () {
 
-    printf("Ingrese el dinero inicial para cada jugador");
+    printf("Ingrese el dinero inicial para cada jugador \n");
     int dinero_inicial = pedir_input();
 
     while (dinero_inicial <= 0) {
 
-        printf("El dinero inicial debe ser positivo");    
+        printf("El dinero inicial debe ser positivo\n");    
         dinero_inicial = pedir_input();
     }
 
@@ -335,12 +353,12 @@ int pedir_dinero_inicial () {
 
 int pedir_cantidad_de_jugadores () {
 
-    printf("Ingrese la cantidad de jugadores");
+    printf("Ingrese la cantidad de jugadores \n");
     int cantidad_de_jugadores = pedir_input();
 
-    while (cantidad_de_jugadores >= 2 && cantidad_de_jugadores <=5) {
+    while (cantidad_de_jugadores < 2 || cantidad_de_jugadores > 5) {
 
-        printf("La cantidad de jugadores debe ser entre 2 y cinco");    
+        printf("La cantidad de jugadores debe ser entre 2 y cinco \n");    
         cantidad_de_jugadores = pedir_input();
     }
 
@@ -375,6 +393,7 @@ jugador* pedir_nombres (int cantidad_de_jugadores) {
         }
         (jugadores+i)->nombre = malloc(100);
         strcpy((jugadores+i)->nombre, nombre);
+
 
     }
 
@@ -419,6 +438,7 @@ void f_main () {
                 (jugadores+i) -> dinero = dinero_inicial;
                 (jugadores+i) -> en_ronda = True;
                 (jugadores+i) -> mano = NULL;
+                (jugadores+i) -> id = i;
             }            
 
             jugar(jugadores, cantidad_de_jugadores);
@@ -441,8 +461,8 @@ void f_main () {
     
 void main () {
     // printf("g");
-    jugador* jugadores = pedir_nombres(4);
-    // f_main();
+    // jugador* jugadores = pedir_nombres(4);
+    f_main();
     // printf("llegamos");
     // node* mano = NULL;
     // node* mesa = NULL;

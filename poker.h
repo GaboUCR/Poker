@@ -6,6 +6,14 @@
     } carta;
 
     typedef struct list_node {struct list_node* next; carta* carta;} node;
+
+    typedef struct pot_node {
+        struct pot_node* next;  
+        int * jugadores; //indices de los jugadores que apuestan por este bote
+        int cantidad_jugadores;
+        int apuesta_minima;
+        int dinero;
+        } pot_node;
     
     enum valor_cartas {
         StraightFlush = 1,
@@ -54,6 +62,7 @@
 
     typedef struct jugador {
         char * nombre;
+        int id;
         node * mano;
         enum Bool en_ronda;
         int dinero;
@@ -67,7 +76,15 @@
         int jugadores_en_ronda;
     } juego;
 
+    node* makeListNode (carta* carta);
 
+    pot_node* makeListpot_node (int apuesta_minima, int dinero);
+
+    pot_node* get_pot (pot_node* head, int dinero, int jugador_id);
+
+    pot_node* insert_pot (int apuesta_minima, int dinero, int jugador_inicial, pot_node * head);
+
+    void insert_jugador (int id, pot_node* bote);
 
     node* makeListNode (carta* carta);
 
