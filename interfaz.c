@@ -78,7 +78,6 @@ jugador* pedir_nombres (int cantidad_de_jugadores) {
 
     char nombre[100];
     
-
     for (int i = 0; i < cantidad_de_jugadores; i++) {
 
         int b = 1;
@@ -106,6 +105,20 @@ jugador* pedir_nombres (int cantidad_de_jugadores) {
 
     return jugadores;
 
+}
+
+int pedir_cantidad_de_jugadores () {
+
+    printf("Ingrese la cantidad de jugadores \n");
+    int cantidad_de_jugadores = pedir_input();
+
+    while (cantidad_de_jugadores < 2 || cantidad_de_jugadores > 5) {
+
+        printf("La cantidad de jugadores debe ser entre 2 y cinco \n");    
+        cantidad_de_jugadores = pedir_input();
+    }
+
+    return cantidad_de_jugadores;
 }
 
 void mensaje_bienvenida () {

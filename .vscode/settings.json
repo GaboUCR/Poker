@@ -5,5 +5,6 @@
         "linkedlist.h": "c",
         "poker.h": "c",
         "string.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
 }

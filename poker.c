@@ -5,6 +5,8 @@
 #include <string.h>
 #include "pokerHands.h"
 #include "interfaz.h"
+// #include <unistd.h>
+// #include<windows.h>
 
 mazo* crear_mazo () {
     
@@ -70,6 +72,7 @@ void apuesta (juego* juego, jugador* jugador, pot_node* bote) {
     imprimir_mano(jugador -> mano);
 
     //revisa en cual bote puede apostar el jugador
+
     pot_node* bote_actual = get_pot(bote, jugador->dinero, jugador->id);
 
     while (1) {
@@ -100,7 +103,7 @@ void apuesta (juego* juego, jugador* jugador, pot_node* bote) {
         }
 
         else if (apuesta < bote_actual -> apuesta_minima) {
-            printf(" \n\n\nLa apuesta deber ser igual o mayor que %d \n", juego->apuesta_minima);
+            printf(" \n\n\nLa apuesta deber ser igual o mayor que %d \n", bote_actual->apuesta_minima);
         }
         
         else {
@@ -187,6 +190,59 @@ int valor_de_mano (node* mano, node* mesa) {
     return NoPair;
 }
 
+void repartir_botines (jugador* jugadores, juego* juego , pot_node* bote) {
+
+    pot_node* cur = bote;
+
+    do {
+
+        int mejor_mano = 10;
+        int cantidad_de_ganadores = 0;
+        int ganadores[5];
+
+        for (int i = 0; i < cur->cantidad_jugadores; i++) {
+
+            int id = *((cur->jugadores) + i);
+
+
+
+            node* hand = (jugadores + id) -> mano;
+
+            int mano = valor_de_mano(hand, juego->mesa);
+
+            if (mano < mejor_mano) {
+
+                cantidad_de_ganadores = 1;
+                ganadores[0] = id;
+                mejor_mano = mano;
+
+            }
+            else if (mano == mejor_mano) {
+
+                ganadores[cantidad_de_ganadores] = id;
+                cantidad_de_ganadores += 1;
+            }
+
+        }
+
+        for (int i = 0; i<cantidad_de_ganadores; i++) {
+
+            int id = ganadores[i];
+
+            printf("\n\nEl jugador %s ha ganado %d\n\n", (jugadores+id)->nombre, (cur->dinero)/cantidad_de_ganadores);
+
+            (jugadores + id) -> dinero += (cur->dinero)/cantidad_de_ganadores;
+
+            sleep(1);
+
+        }
+
+        cur = cur -> next;
+
+    } while (cur != NULL);
+
+}
+
 //inicia el juego, todas las variables de los jugadores ya están inicializadas
 void jugar (jugador* jugadores, int cantidad_jugadores) {
     
@@ -195,7 +251,6 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
     while (True) {
 
         pot_node *bote = makeListpot_node(0, 0);
-
 
         juego.jugadores_en_ronda = cantidad_jugadores;
         mazo *mazo = crear_mazo();
@@ -238,27 +293,14 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
             }
         }
         //Se revisa quien gano
+        repartir_botines(jugadores, &juego, bote);
+
 
         //se limpian todas las variables
 
 
         break;
     }
-}
-
-
-int pedir_cantidad_de_jugadores () {
-
-    printf("Ingrese la cantidad de jugadores \n");
-    int cantidad_de_jugadores = pedir_input();
-
-    while (cantidad_de_jugadores < 2 || cantidad_de_jugadores > 5) {
-
-        printf("La cantidad de jugadores debe ser entre 2 y cinco \n");    
-        cantidad_de_jugadores = pedir_input();
-    }
-
-    return cantidad_de_jugadores;
 }
 
 void f_main () {

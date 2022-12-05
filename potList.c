@@ -21,10 +21,9 @@ void insert_jugador (int id, pot_node* bote) {
 
     int cantidad = bote -> cantidad_jugadores;
     int no_adentro = True;
-
     
     for (int i = 0; i<cantidad; i++) {
-        // printf("%d id: %d", *((bote -> jugadores) + i), id);
+
         if (*((bote -> jugadores) + i) == id) {
 
             no_adentro = False;
@@ -37,8 +36,6 @@ void insert_jugador (int id, pot_node* bote) {
         (bote->cantidad_jugadores)++;
     }
 
-
-
 }
 
 //Busca en la lista de botes por uno en el que el jugador pueda apostar
@@ -46,25 +43,26 @@ pot_node* get_pot (pot_node* head, int dinero, int jugador_id) {
 
     pot_node* cur = head;
 
-    do {
+    while (True) {
 
         if (cur->apuesta_minima <= dinero) {
-
+            
             insert_jugador(jugador_id, cur);
             return cur;
         }
 
+        if (cur -> next == NULL) {
+            break;
+        }
         cur = cur -> next;
-
-    } while (cur != NULL);
+    } 
 
     //Si se llega aqui se debe crear un bote nuevo
     pot_node* nuevo = NULL;
     nuevo = insert_pot(0, 0, jugador_id, nuevo);
 
-    cur = nuevo;
-
-    return cur;
+    cur -> next = nuevo;
+    return nuevo;
 }
 
 pot_node* insert_pot (int apuesta_minima, int dinero, int jugador_inicial, pot_node * head) {
@@ -86,4 +84,17 @@ pot_node* insert_pot (int apuesta_minima, int dinero, int jugador_inicial, pot_n
 
 	current -> next = new;
 	return head;
+}
+
+void print_pot(pot_node* head) {
+
+    pot_node* cur = head;
+
+    do {
+
+        printf("minimo %d\n", cur->apuesta_minima);
+
+        cur = cur -> next;
+
+    } while (cur != NULL);   
 }

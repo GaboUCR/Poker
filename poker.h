@@ -99,3 +99,5 @@
     void imprimir_mano (node* mano);
     
     void printList(node* head);
+
+    void print_pot(pot_node* head);
