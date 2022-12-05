@@ -131,14 +131,110 @@ void cargar_jugadores_en_ronda(jugador* jugadores, int cantidad_jugadores, int* 
     *cantidad_jugadores_en_ronda = j;
 }
 
-void valor_de_mano (node* mano, node* mesa) {
+int comprobar_full_house(node* mano, node* mesa) {
 
-    // comprobar straigh flush
-    carta posible_flush[100];
-    int j = 0;
+    int cantidad_tipo2 = 0;
+    int cantidad_tipo3 = 0;
     int cantidad_tipo = 0;
 
+    for (int i = 1; i<=13; i++) {
 
+        cantidad_tipo = 0;
+
+        node * actual = mano;
+
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> valor_carta) == i) {
+
+                cantidad_tipo += 1;
+                
+            }
+            actual = actual -> next;
+
+        }
+
+        actual = mesa;
+
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> valor_carta) == i) {
+
+                cantidad_tipo += 1;  
+            }
+            actual = actual -> next;
+
+        }
+
+        if (cantidad_tipo >= 3) {
+
+            if (!cantidad_tipo3) {
+                cantidad_tipo3 = True;
+            }
+            else {
+
+                cantidad_tipo2 = True;
+            }
+            
+        }
+
+        else if (cantidad_tipo == 2) {
+            cantidad_tipo2 = True;
+        }
+
+        if (cantidad_tipo3  && cantidad_tipo2) {
+            return FullHouse;
+        }
+    }
+    return 0;
+}
+
+int comprobar_four_of_a_kind(node* mano, node* mesa) {
+
+    int cantidad_tipo = 0;
+
+    for (int i = 1; i<=13; i++) {
+        
+        cantidad_tipo = 0;
+        node * actual = mano;
+
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> valor_carta) == i) {
+
+                cantidad_tipo += 1;
+                
+            }
+            actual = actual -> next;
+
+        }
+
+        actual = mesa;
+
+        while (actual != NULL) {
+
+            if ( ( (actual -> carta) -> valor_carta) == i) {
+
+                cantidad_tipo += 1;  
+            }
+            actual = actual -> next;
+
+        }
+
+        if (cantidad_tipo >= 4) {
+            return FourOfAKind;
+        }
+
+    }
+
+    return 0;
+
+}
+
+int comprobar_straight_flush (node* mano, node* mesa) {
+    int cantidad_tipo = 0;
+    carta posible_flush[100];
+    int j = 0;
 
     for (int i = 0; i < 4; i++) {
 
@@ -178,43 +274,83 @@ void valor_de_mano (node* mano, node* mesa) {
 
         if (cantidad_tipo >= 5) {
 
-            carta flush_ordenado[15];
-            int secuencia = 1;
+            for (int k = 0; k < 10; k++) {
 
-            while (True) {
+                carta c = posible_flush[k];
+                int siguiente;
+                int secuencia = 1;
 
-                for (int i = 0; i < 10; i++) {
-                    carta c = posible_flush[i];
-                    int siguiente;
+                if (c.valor_carta == K) {
+                    siguiente = A;
+                }
+                else {
+                    siguiente = c.valor_carta + 1;
+                }
+            
+                while (True) {
+                    
+                    if (secuencia == 5) {
 
-                    if (c.valor_carta == K) {
-                        siguiente = A;
+                        return StraightFlush;
                     }
-                    else {
-                        siguiente = c.valor_carta + 1;
-                    }
 
-                    for (int j = i+1; j<10; j++) {
+                    int no_encontrado = 1;
 
+                    for (int w = 0; w<j; w++) {
 
-                        if (posible_flush[j].valor_carta == siguiente) {
+                        if (posible_flush[w].valor_carta == siguiente) {
+                            
+                            no_encontrado = 0;
                             secuencia++;
+
+                            if (c.valor_carta == K) {
+                                siguiente = A;
+                            }
+                            else {
+                                siguiente = c.valor_carta + 1;
+                            }
+                            break;                           
                         }
+                    }
+
+                    if (no_encontrado) {
+                        break;
                     }
 
                 }
             }
-
-
-
             
         }            
 
     }
+    return 0;
+}
+
+int valor_de_mano (node* mano, node* mesa) {
+
+    int valor_mano = comprobar_straight_flush(mano, mesa);
+
+
+    if (valor_mano != 0) {
+        return valor_mano;
+    }
+
+    valor_mano = comprobar_four_of_a_kind(mano, mesa);
+
+    if (valor_mano != 0) {
+        return valor_mano;
+    }
+
+    valor_mano = comprobar_full_house(mano, mesa);
+
+    if (valor_mano != 0) {
+        return valor_mano;
+    }
+
+
+    return 0;
 
     
-
-
 }
 
 //inicia el juego, todas las variables de los jugadores ya están inicializadas
@@ -459,19 +595,80 @@ void f_main () {
         }
     }
     
-void main () {
-    // printf("g");
-    // jugador* jugadores = pedir_nombres(4);
-    f_main();
-    // printf("llegamos");
-    // node* mano = NULL;
-    // node* mesa = NULL;
-    // mazo* baraja = crear_mazo();
+void main() {
+    // f_main();
+    four_of_a_kind_test();
+    straight_flush_test();
+    full_house_test();
+}
+
+void full_house_test () {
+    node* mano = NULL;
+    node* mesa = NULL;
+
+    for (int i =0; i < 3; i++) {
+        carta c;
+        c.tipo_carta = 3;
+        c.valor_carta = 1;
+        mano = insert(c, mano);
+    }
+
+    for (int i =0; i < 2; i++) {
+        carta c;
+        c.tipo_carta = 4;
+        c.valor_carta = K;
+        mesa = insert(c, mesa);
+    }
+
+    printf("%d", valor_de_mano(mano, mesa));   
+}
+
+void four_of_a_kind_test () {
+
+    node* mano = NULL;
+    node* mesa = NULL;
+
+    for (int i =0; i < 4; i++) {
+        carta c;
+        c.tipo_carta = i;
+        c.valor_carta = 1;
+        mano = insert(c, mano);
+    }
+
     
-    // mano = repartir(baraja, 5, mano);
-    // mesa = repartir(baraja, 5, mesa);
+    for (int i =0; i < 4; i++) {
+        carta c;
+        c.tipo_carta = i;
+        c.valor_carta = K;
+        mesa = insert(c, mesa);
+    }
+
+    printf("%d", valor_de_mano(mano, mesa));
+   
+}
+
+void straight_flush_test () {
+
+    // f_main();
+    node* mano = NULL;
+    node* mesa = NULL;
+
+    for (int i =1; i < 6; i++) {
+        carta c;
+        c.tipo_carta = 0;
+        c.valor_carta = i;
+        mano = insert(c, mano);
+    }
+
     
-    // valor_de_mano(mano, mesa);
-    // jugar();
+    for (int i =1; i < 6; i++) {
+        carta c;
+        c.tipo_carta = 0;
+        c.valor_carta = i;
+        mesa = insert(c, mesa);
+    }
+
+    printf("%d", valor_de_mano(mano, mesa));
+
 
 }
