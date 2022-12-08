@@ -78,6 +78,10 @@
 
     node* makeListNode (carta* carta);
 
+    void free_node(node* head);
+
+    void free_pot (pot_node* head);
+
     pot_node* makeListpot_node (int apuesta_minima, int dinero);
 
     pot_node* get_pot (pot_node* head, int dinero, int jugador_id);

@@ -86,6 +86,23 @@ pot_node* insert_pot (int apuesta_minima, int dinero, int jugador_inicial, pot_n
 	return head;
 }
 
+void free_pot (pot_node* head) {
+
+    pot_node* current;
+
+    do {
+
+        current = head ->next;
+
+        free(head->jugadores);
+        free(head);
+
+        head = current;
+
+	} while (current != NULL);	
+
+}
+
 void print_pot(pot_node* head) {
 
     pot_node* cur = head;

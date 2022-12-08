@@ -1,12 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
-// #include "linkedList.h"
 #include "poker.h"
 #include <string.h>
 #include "pokerHands.h"
 #include "interfaz.h"
-// #include <unistd.h>
-// #include<windows.h>
+#include "puntuaciones.h"
 
 mazo* crear_mazo () {
     
@@ -233,6 +231,8 @@ void repartir_botines (jugador* jugadores, juego* juego , pot_node* bote) {
 
             (jugadores + id) -> dinero += (cur->dinero)/cantidad_de_ganadores;
 
+            puntuacion((jugadores+id)->nombre, (cur->dinero)/cantidad_de_ganadores);
+
             sleep(1);
 
         }
@@ -241,6 +241,21 @@ void repartir_botines (jugador* jugadores, juego* juego , pot_node* bote) {
 
     } while (cur != NULL);
 
+}
+
+//elimina todas las variables para utilizarlas en la siguiente ronda
+void limpiar_mesa(jugador* jugadores, int cantidad_de_jugadores, node* mesa, pot_node* bote) {
+
+    //elimina las cartas de las manos de los jugadores
+    for (int i =0; i<cantidad_de_jugadores; i++) {
+
+        free_node((jugadores+i)->mano);
+        (jugadores+i)->mano = NULL;
+    }
+
+    free_node(mesa);
+
+    free_pot(bote);
 }
 
 //inicia el juego, todas las variables de los jugadores ya están inicializadas
@@ -295,22 +310,61 @@ void jugar (jugador* jugadores, int cantidad_jugadores) {
         //Se revisa quien gano
         repartir_botines(jugadores, &juego, bote);
 
-
         //se limpian todas las variables
+        limpiar_mesa(jugadores, cantidad_jugadores, juego.mesa, bote);
 
-
-        break;
     }
 }
 
-void f_main () {
+void main () {
+
+    if (fopen("puntuaciones.txt", "r") == NULL) {
+
+        FILE *fp;
+        fp = fopen("puntuaciones.txt", "w");
+
+        char str[52];
+  
+        for (int i = 0; i<50; i++) {
+
+            *(str+i)= 32;
+        }
+
+        for (int i =0; i<10; i++) {
+
+            fprintf(fp,"%s",str);
+        }
+        fclose(fp);
+
+        fp = fopen("puntuaciones_numero.txt", "w");
+
+        char str1[51];
+
+        int x = 0;
+
+        int length = snprintf( NULL, 0, "%d", x );
+
+        for (int i = 0; i<50-length; i++) {
+
+            *(str1+i)= 48;
+        }
+
+        snprintf(str1+(50-length), length+1, "%d", x);
+
+        for (int i =0; i<10; i++) {
+
+            fprintf(fp,"%s",str1);
+        }
+
+        fclose(fp);
+    }
 
     mensaje_bienvenida();
 
     printf("¿Que desea hacer?\n");
     printf("\n(1)   ¡Jugar!");
     printf("\n(2)   Reglas");
-    printf("\n(3)   Mejores manos ");
+    printf("\n(3)   Mejores botines ");
     printf("\n(4)   Salir\n");
     printf("Elija una opción (1-4):  ");
 
@@ -349,10 +403,11 @@ void f_main () {
 
         case 2:;
 
-            printf("\n\nEn el siguiente enlace se pueden encontrar las reglas del juego:https://bicyclecards.com/how-to-play/basics-of-poker\n\n");
+            printf("\n\nEn el siguiente enlace se pueden encontrar las reglas del juego: https://bicyclecards.com/how-to-play/basics-of-poker\nTambien las puede encontrar en: \n");
             break;
 
         case 3:
+            leer();
             break;
 
         case 4:
@@ -360,7 +415,3 @@ void f_main () {
 
         }
     }
-
-void main() {
-    f_main();
-}

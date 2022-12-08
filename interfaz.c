@@ -76,7 +76,7 @@ jugador* pedir_nombres (int cantidad_de_jugadores) {
     
     jugador* jugadores = malloc(cantidad_de_jugadores*sizeof(jugador));
 
-    char nombre[100];
+    char nombre[51];
     
     for (int i = 0; i < cantidad_de_jugadores; i++) {
 
@@ -97,7 +97,7 @@ jugador* pedir_nombres (int cantidad_de_jugadores) {
                 }
             }
         }
-        (jugadores+i)->nombre = malloc(100);
+        (jugadores+i)->nombre = malloc(51);
         strcpy((jugadores+i)->nombre, nombre);
 
 

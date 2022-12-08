@@ -35,6 +35,23 @@ node* insert (carta carta, node * head) {
 	return head;
 }
 
+void free_node(node* head) {
+
+    node* current;
+
+    do {
+
+        current = head -> next;
+
+        free(head->carta);
+        free(head);
+
+        head = current;
+
+	} while (current != NULL);	
+
+}
+
 int imprimir_carta(carta carta) {
 
     switch(carta.valor_carta) {
